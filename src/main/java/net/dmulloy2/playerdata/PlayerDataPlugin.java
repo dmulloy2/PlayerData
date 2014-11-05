@@ -41,19 +41,27 @@ public class PlayerDataPlugin extends JavaPlugin
 
 		// Determine backend
 		String backendName = getConfig().getString("backend", "YAML");
-		if (backendName.equalsIgnoreCase("YAML")){ 
+		if (backendName.equalsIgnoreCase("YAML"))
+		{
 			backend = new YAMLBackend();
-		} else if (backendName.equalsIgnoreCase("SQLite")) {
+		}
+		else if (backendName.equalsIgnoreCase("SQLite"))
+		{
 			backend = new SQLiteBackend();
-		} else {
+		}
+		else
+		{
 			getLogger().severe("Unknown backend: " + backendName);
 			setEnabled(false);
 			return;
 		}
 
-		try {
+		try
+		{
 			backend.initialize();
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex)
+		{
 			getLogger().log(Level.SEVERE, "Failed to initialize " + backend.getName() + " backend:", ex);
 			setEnabled(false);
 			return;
@@ -100,7 +108,10 @@ public class PlayerDataPlugin extends JavaPlugin
 				getOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers");
 			if (getOnlinePlayers.getReturnType() != Collection.class)
 				return Arrays.asList((Player[]) getOnlinePlayers.invoke(null));
-		} catch (Throwable ex) { }
+		}
+		catch (Throwable ex)
+		{
+		}
 		return (List<Player>) Bukkit.getOnlinePlayers();
 	}
 

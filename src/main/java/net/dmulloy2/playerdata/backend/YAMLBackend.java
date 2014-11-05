@@ -36,7 +36,8 @@ public class YAMLBackend implements Backend
 	}
 
 	@Override
-	public void initialize() throws Throwable {
+	public void initialize() throws Throwable
+	{
 		//
 	}
 
