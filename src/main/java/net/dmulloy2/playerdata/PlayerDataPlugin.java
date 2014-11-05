@@ -108,10 +108,7 @@ public class PlayerDataPlugin extends JavaPlugin
 				getOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers");
 			if (getOnlinePlayers.getReturnType() != Collection.class)
 				return Arrays.asList((Player[]) getOnlinePlayers.invoke(null));
-		}
-		catch (Throwable ex)
-		{
-		}
+		} catch (Throwable ex) { }
 		return (List<Player>) Bukkit.getOnlinePlayers();
 	}
 

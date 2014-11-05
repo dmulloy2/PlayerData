@@ -30,7 +30,6 @@ public class AbstractPlayerDataCache<T extends AbstractPlayerData>
 	private final ConcurrentMap<String, T> cache;
 
 	private final JavaPlugin plugin;
-
 	public AbstractPlayerDataCache(JavaPlugin plugin, Class<T> type)
 	{
 		this.cache = new ConcurrentHashMap<>(64, 0.75F, 64);
