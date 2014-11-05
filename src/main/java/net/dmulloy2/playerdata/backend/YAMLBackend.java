@@ -36,6 +36,11 @@ public class YAMLBackend implements Backend
 	}
 
 	@Override
+	public void initialize() throws Throwable {
+		//
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractPlayerData> T load(String key, Plugin plugin, Class<T> clazz)
 	{

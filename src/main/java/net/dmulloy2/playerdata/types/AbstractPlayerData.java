@@ -5,6 +5,8 @@ package net.dmulloy2.playerdata.types;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,8 +38,26 @@ public abstract class AbstractPlayerData implements ConfigurationSerializable
 						field.setAccessible(accessible);
 					}
 				}
-			} catch (Throwable ex) { }
+			} catch (IllegalAccessException ex) { }
 		}
+	}
+
+	public AbstractPlayerData(ResultSet resultSet) throws SQLException
+	{
+		try
+		{
+			for (Field field : getClass().getDeclaredFields())
+			{
+				Object value = resultSet.getObject(field.getName());
+				if (value != null)
+				{
+					boolean accessible = field.isAccessible();
+					field.setAccessible(true);
+					field.set(this, value);
+					field.setAccessible(accessible);
+				}
+			}
+		} catch (IllegalAccessException ex) { }
 	}
 
 	@Override

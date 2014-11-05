@@ -5,11 +5,14 @@ package net.dmulloy2.playerdata;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.backend.Backend;
+import net.dmulloy2.playerdata.backend.SQLiteBackend;
 import net.dmulloy2.playerdata.backend.YAMLBackend;
 
 import org.apache.commons.lang.Validate;
@@ -32,7 +35,30 @@ public class PlayerDataPlugin extends JavaPlugin
 	{
 		instance = this;
 
-		backend = new YAMLBackend();
+		// Configuration
+		saveDefaultConfig();
+		reloadConfig();
+
+		// Determine backend
+		String backendName = getConfig().getString("backend", "YAML");
+		if (backendName.equalsIgnoreCase("YAML")){ 
+			backend = new YAMLBackend();
+		} else if (backendName.equalsIgnoreCase("SQLite")) {
+			backend = new SQLiteBackend();
+		} else {
+			getLogger().severe("Unknown backend: " + backendName);
+			setEnabled(false);
+			return;
+		}
+
+		try {
+			backend.initialize();
+		} catch (Throwable ex) {
+			getLogger().log(Level.SEVERE, "Failed to initialize " + backend.getName() + " backend:", ex);
+			setEnabled(false);
+			return;
+		}
+
 		getLogger().info("Using the " + backend.getName() + " backend!");
 	}
 
@@ -46,6 +72,18 @@ public class PlayerDataPlugin extends JavaPlugin
 	public static Backend getBackend()
 	{
 		return instance.backend;
+	}
+
+	// ---- Logging
+
+	public static void log(Level level, String msg, Object... args)
+	{
+		instance.getLogger().log(level, MessageFormat.format(msg, args));
+	}
+
+	public static void log(String msg, Object... args)
+	{
+		log(Level.INFO, msg, args);
 	}
 
 	// ---- Utility methods

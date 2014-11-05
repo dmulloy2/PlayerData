@@ -15,6 +15,8 @@ import org.bukkit.plugin.Plugin;
 
 public interface Backend
 {
+	void initialize() throws Throwable;
+
 	<T extends AbstractPlayerData> T load(String key, Plugin plugin, Class<T> clazz);
 
 	<T extends AbstractPlayerData> void save(String key, Plugin plugin, T instance);
