@@ -3,21 +3,13 @@
  */
 package net.dmulloy2.playerdata;
 
-import java.io.File;
-import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.backend.Backend;
 import net.dmulloy2.playerdata.backend.SQLiteBackend;
 import net.dmulloy2.playerdata.backend.YAMLBackend;
 
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -48,6 +40,11 @@ public class PlayerDataPlugin extends JavaPlugin
 		else if (backendName.equalsIgnoreCase("SQLite"))
 		{
 			backend = new SQLiteBackend();
+		}
+		else if (backendName.equalsIgnoreCase("MySQL"))
+		{
+			// TODO: This
+			// backend = new MySQLBackend();
 		}
 		else
 		{
@@ -92,41 +89,5 @@ public class PlayerDataPlugin extends JavaPlugin
 	public static void log(String msg, Object... args)
 	{
 		log(Level.INFO, msg, args);
-	}
-
-	// ---- Utility methods
-
-	private static Method getOnlinePlayers;
-
-	@SuppressWarnings("unchecked")
-	public static List<Player> getOnlinePlayers()
-	{
-		try
-		{
-			// Provide backwards compatibility
-			if (getOnlinePlayers == null)
-				getOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers");
-			if (getOnlinePlayers.getReturnType() != Collection.class)
-				return Arrays.asList((Player[]) getOnlinePlayers.invoke(null));
-		} catch (Throwable ex) { }
-		return (List<Player>) Bukkit.getOnlinePlayers();
-	}
-
-	public static String trimFileExtension(File file, String extension)
-	{
-		Validate.notNull(file, "file cannot be null!");
-		Validate.notNull(extension, "extension cannot be null!");
-
-		int index = file.getName().lastIndexOf(extension);
-		return index > 0 ? file.getName().substring(0, index) : file.getName();
-	}
-
-	public static String trimFileExtension(String name, String extension)
-	{
-		Validate.notNull(name, "name cannot be null!");
-		Validate.notNull(extension, "extension cannot be null!");
-
-		int index = name.lastIndexOf(extension);
-		return index > 0 ? name.substring(0, index) : name;
 	}
 }

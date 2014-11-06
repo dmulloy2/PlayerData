@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.PlayerDataPlugin;
 import net.dmulloy2.playerdata.types.AbstractPlayerData;
+import net.dmulloy2.playerdata.util.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -146,7 +147,7 @@ public class AbstractPlayerDataCache<T extends AbstractPlayerData>
 	{
 		// Get all online players into an array list
 		List<String> online = new ArrayList<>();
-		for (Player player : PlayerDataPlugin.getOnlinePlayers())
+		for (Player player : Util.getOnlinePlayers())
 			online.add(player.getName());
 
 		// Actually cleanup the data

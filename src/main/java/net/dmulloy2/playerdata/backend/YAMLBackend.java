@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.PlayerDataPlugin;
 import net.dmulloy2.playerdata.types.AbstractPlayerData;
+import net.dmulloy2.playerdata.util.Util;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -24,21 +25,16 @@ import org.bukkit.plugin.Plugin;
 
 public class YAMLBackend implements Backend
 {
-	private final String extension = ".dat";
-	private final String fileName = "players";
-	private final File folder;
-
-	public YAMLBackend()
-	{
-		this.folder = new File(PlayerDataPlugin.getInstance().getDataFolder(), fileName);
-		if (! folder.exists())
-			folder.mkdirs();
-	}
+	private static final String EXTENSION = ".dat";
+	private static final String FILE_NAME = "players";
+	private File folder;
 
 	@Override
 	public void initialize() throws Throwable
 	{
-		//
+		this.folder = new File(PlayerDataPlugin.getInstance().getDataFolder(), FILE_NAME);
+		if (! folder.exists())
+			folder.mkdirs();
 	}
 
 	@Override
@@ -51,13 +47,13 @@ public class YAMLBackend implements Backend
 			Validate.notNull(plugin, "plugin cannot be null!");
 			Validate.notNull(clazz, "clazz cannot be null!");
 
-			File file = new File(folder, key + extension);
+			File file = new File(folder, key + EXTENSION);
 			if (! file.exists())
 				return null;
 
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 			Map<String, Object> values = yaml.getValues(false);
-			Map<String, Object> args = (Map<String, Object>) values.get(getDataKey(plugin));
+			Map<String, Object> args = (Map<String, Object>) values.get(Util.getDataKey(plugin));
 			return (T) ConfigurationSerialization.deserializeObject(args);
 		}
 		catch (Throwable ex)
@@ -76,11 +72,11 @@ public class YAMLBackend implements Backend
 			Validate.notNull(plugin, "plugin cannot be null!");
 			Validate.notNull(instance, "instance cannot be null!");
 
-			File file = new File(folder, key + extension);
+			File file = new File(folder, key + EXTENSION);
 			if (! file.exists())
 				file.createNewFile();
 
-			String dataKey = getDataKey(plugin);
+			String dataKey = Util.getDataKey(plugin);
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 			for (Entry<String, Object> entry : instance.serialize().entrySet())
 			{
@@ -102,17 +98,11 @@ public class YAMLBackend implements Backend
 
 		for (String file : folder.list())
 		{
-			if (file.contains(extension))
-				keys.add(PlayerDataPlugin.trimFileExtension(file, extension));
+			if (file.contains(EXTENSION))
+				keys.add(Util.trimFileExtension(file, EXTENSION));
 		}
 
 		return keys;
-	}
-
-	private final String getDataKey(Plugin plugin)
-	{
-		String name = plugin.getName();
-		return Character.toLowerCase(name.charAt(0)) + name.substring(1);
 	}
 
 	@Override
