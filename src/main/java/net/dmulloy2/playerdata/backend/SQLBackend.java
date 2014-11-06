@@ -16,6 +16,7 @@ import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.PlayerDataPlugin;
 import net.dmulloy2.playerdata.types.AbstractPlayerData;
+import net.dmulloy2.playerdata.util.Util;
 
 import org.bukkit.plugin.Plugin;
 
@@ -42,8 +43,8 @@ public abstract class SQLBackend implements Backend
 
 			loadStatement.setString(1, key);
 			ResultSet results = loadStatement.executeQuery();
-			Constructor<T> constructor = clazz.getConstructor(ResultSet.class);
-			return constructor.newInstance(results);
+			Constructor<T> constructor = clazz.getConstructor(ResultSet.class, Plugin.class);
+			return constructor.newInstance(results, plugin);
 		}
 		catch (Throwable ex)
 		{
@@ -59,10 +60,11 @@ public abstract class SQLBackend implements Backend
 		{
 			Statement statement = connection.createStatement();
 			String query = "UPDATE players SET";
+			String dataKey = Util.getDataKey(plugin) + ".";
 			Map<String, Object> args = instance.serialize();
 			for (Entry<String, Object> entry : args.entrySet())
 			{
-				query += " " + entry.getKey() + "=" + entry.getValue();
+				query += " " + dataKey + entry.getKey() + "=" + entry.getValue();
 			}
 			query += " WHERE uniqueId=" + key;
 			statement.executeQuery(query);

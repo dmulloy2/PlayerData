@@ -49,9 +49,10 @@ public abstract class AbstractData implements ConfigurationSerializable
 	{
 		try
 		{
+			String dataKey = Util.getDataKey(plugin) + ".";
 			for (Field field : getClass().getDeclaredFields())
 			{
-				Object value = resultSet.getObject(Util.getDataKey(plugin) + field.getName());
+				Object value = resultSet.getObject(dataKey + field.getName());
 				if (value != null)
 				{
 					boolean accessible = field.isAccessible();
