@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.PlayerDataPlugin;
-import net.dmulloy2.playerdata.types.AbstractPlayerData;
+import net.dmulloy2.playerdata.types.AbstractData;
 import net.dmulloy2.playerdata.util.Util;
 
 import org.apache.commons.lang.Validate;
@@ -26,26 +26,30 @@ import org.bukkit.plugin.Plugin;
 public class YAMLBackend implements Backend
 {
 	private static final String EXTENSION = ".dat";
-	private static final String FILE_NAME = "players";
-	private File folder;
+	private File dataFolder;
 
 	@Override
 	public void initialize() throws Throwable
 	{
-		this.folder = new File(PlayerDataPlugin.getInstance().getDataFolder(), FILE_NAME);
-		if (! folder.exists())
-			folder.mkdirs();
+		this.dataFolder = PlayerDataPlugin.getInstance().getDataFolder();
+		if (! dataFolder.exists())
+			dataFolder.mkdirs();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractPlayerData> T load(String key, Plugin plugin, Class<T> clazz)
+	public <T extends AbstractData> T load(String type, String key, Plugin plugin, Class<T> clazz)
 	{
 		try
 		{
+			Validate.notEmpty(type, "type cannot be empty!");
 			Validate.notEmpty(key, "key cannot be null or empty!");
 			Validate.notNull(plugin, "plugin cannot be null!");
 			Validate.notNull(clazz, "clazz cannot be null!");
+
+			File folder = new File(dataFolder, type);
+			if (! folder.exists())
+				folder.mkdirs();
 
 			File file = new File(folder, key + EXTENSION);
 			if (! file.exists())
@@ -64,13 +68,18 @@ public class YAMLBackend implements Backend
 	}
 
 	@Override
-	public <T extends AbstractPlayerData> void save(String key, Plugin plugin, T instance)
+	public <T extends AbstractData> void save(String type, String key, Plugin plugin, T instance)
 	{
 		try
 		{
+			Validate.notEmpty(type, "type cannot be empty!");
 			Validate.notEmpty(key, "key cannot be null or empty!");
 			Validate.notNull(plugin, "plugin cannot be null!");
 			Validate.notNull(instance, "instance cannot be null!");
+
+			File folder = new File(dataFolder, type);
+			if (! folder.exists())
+				folder.mkdirs();
 
 			File file = new File(folder, key + EXTENSION);
 			if (! file.exists())
@@ -92,9 +101,13 @@ public class YAMLBackend implements Backend
 	}
 
 	@Override
-	public List<String> getAllDataKeys()
+	public List<String> getKeys(String type)
 	{
 		List<String> keys = new ArrayList<>();
+
+		File folder = new File(dataFolder, type);
+		if (! folder.exists())
+			return keys;
 
 		for (String file : folder.list())
 		{

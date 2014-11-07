@@ -5,7 +5,7 @@ package net.dmulloy2.playerdata.backend;
 
 import java.util.List;
 
-import net.dmulloy2.playerdata.types.AbstractPlayerData;
+import net.dmulloy2.playerdata.types.AbstractData;
 
 import org.bukkit.plugin.Plugin;
 
@@ -17,11 +17,11 @@ public interface Backend
 {
 	void initialize() throws Throwable;
 
-	<T extends AbstractPlayerData> T load(String key, Plugin plugin, Class<T> clazz);
+	<T extends AbstractData> T load(String type, String key, Plugin plugin, Class<T> clazz);
 
-	<T extends AbstractPlayerData> void save(String key, Plugin plugin, T instance);
+	<T extends AbstractData> void save(String type, String key, Plugin plugin, T instance);
 
-	List<String> getAllDataKeys();
+	List<String> getKeys(String type);
 
 	String getName();
 }

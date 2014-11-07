@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.PlayerDataPlugin;
-import net.dmulloy2.playerdata.types.AbstractPlayerData;
+import net.dmulloy2.playerdata.types.AbstractData;
 import net.dmulloy2.playerdata.util.Util;
 
 import org.bukkit.plugin.Plugin;
@@ -34,12 +34,12 @@ public abstract class SQLBackend implements Backend
 	public abstract void initialize() throws Throwable;
 
 	@Override
-	public <T extends AbstractPlayerData> T load(String key, Plugin plugin, Class<T> clazz)
+	public <T extends AbstractData> T load(String type, String key, Plugin plugin, Class<T> clazz)
 	{
 		try
 		{
 			if (loadStatement == null)
-				loadStatement = connection.prepareStatement("SELECT * FROM players WHERE uniqueId = ?");
+				loadStatement = connection.prepareStatement("SELECT * FROM " + type + " WHERE identifier=?");
 
 			loadStatement.setString(1, key);
 			ResultSet results = loadStatement.executeQuery();
@@ -54,19 +54,19 @@ public abstract class SQLBackend implements Backend
 	}
 
 	@Override
-	public <T extends AbstractPlayerData> void save(String key, Plugin plugin, T instance)
+	public <T extends AbstractData> void save(String type, String key, Plugin plugin, T instance)
 	{
 		try
 		{
 			Statement statement = connection.createStatement();
-			String query = "UPDATE players SET";
+			String query = "UPDATE " + type + " SET";
 			String dataKey = Util.getDataKey(plugin) + ".";
 			Map<String, Object> args = instance.serialize();
 			for (Entry<String, Object> entry : args.entrySet())
 			{
 				query += " " + dataKey + entry.getKey() + "=" + entry.getValue();
 			}
-			query += " WHERE uniqueId=" + key;
+			query += " WHERE identifier=" + key;
 			statement.executeQuery(query);
 		}
 		catch (Throwable ex)
@@ -76,12 +76,12 @@ public abstract class SQLBackend implements Backend
 	}
 
 	@Override
-	public List<String> getAllDataKeys()
+	public List<String> getKeys(String type)
 	{
 		try
 		{
 			if (allKeysStatement == null)
-				allKeysStatement = connection.prepareStatement("SELECT uniqueId from players");
+				allKeysStatement = connection.prepareStatement("SELECT identifier from " + type);
 			ResultSet results = allKeysStatement.executeQuery();
 
 			int i = 0;
@@ -96,7 +96,7 @@ public abstract class SQLBackend implements Backend
 		}
 		catch (Throwable ex)
 		{
-			PlayerDataPlugin.getInstance().getLogger().log(Level.SEVERE, "Failed to obtain data keys:", ex);
+			PlayerDataPlugin.getInstance().getLogger().log(Level.SEVERE, "Failed to obtain keys for type " + type + ":", ex);
 			return null;
 		}
 	}
