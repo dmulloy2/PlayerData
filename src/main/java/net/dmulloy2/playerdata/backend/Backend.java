@@ -17,11 +17,11 @@ public interface Backend
 {
 	void initialize() throws Throwable;
 
-	<T extends AbstractData> T load(String type, String key, Plugin plugin, Class<T> clazz);
+	<T extends AbstractData> T load(String key, Plugin plugin, Class<T> clazz);
 
-	<T extends AbstractData> void save(String type, String key, Plugin plugin, T instance);
+	<T extends AbstractData> void save(String key, Plugin plugin, T instance);
 
-	List<String> getKeys(String type);
+	List<String> getKeys();
 
 	String getName();
 }

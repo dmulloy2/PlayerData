@@ -76,14 +76,6 @@ public abstract class AbstractPlayerDataCache<T extends AbstractPlayerData> exte
 		online = null;
 	}
 
-	private static final String TYPE_KEY = "players";
-
-	@Override
-	public String getTypeKey()
-	{
-		return TYPE_KEY;
-	}
-
 	// ---- Util
 
 	private final String getKey(OfflinePlayer player)

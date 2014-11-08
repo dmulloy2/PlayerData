@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import net.dmulloy2.playerdata.PlayerDataPlugin;
 import net.dmulloy2.playerdata.types.AbstractData;
 
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -87,7 +86,7 @@ public abstract class AbstractDataCache<T extends AbstractData>
 	{
 		try
 		{
-			T data = PlayerDataPlugin.getBackend().load(getTypeKey(), key, plugin, type);
+			T data = PlayerDataPlugin.getBackend().load(key, plugin, type);
 			return data;
 		}
 		catch (Throwable ex)
@@ -101,15 +100,14 @@ public abstract class AbstractDataCache<T extends AbstractData>
 	{
 		long start = System.currentTimeMillis();
 
-		String typeKey = getTypeKey();
-		plugin.getLogger().info("Saving " + typeKey + " to disk...");
+		plugin.getLogger().info("Saving players to disk...");
 
 		for (Entry<String, T> entry : getAllLoadedData().entrySet())
 		{
-			PlayerDataPlugin.getBackend().save(typeKey, entry.getKey(), plugin, entry.getValue());
+			PlayerDataPlugin.getBackend().save(entry.getKey(), plugin, entry.getValue());
 		}
 
-		plugin.getLogger().info(WordUtils.capitalize(typeKey) + " saved! Took " + (System.currentTimeMillis() - start) + " ms!");
+		plugin.getLogger().info("Players saved! Took " + (System.currentTimeMillis() - start) + " ms.");
 	}
 
 	public abstract void cleanupData();
@@ -126,8 +124,7 @@ public abstract class AbstractDataCache<T extends AbstractData>
 		Map<String, T> data = new HashMap<>();
 		data.putAll(cache);
 
-		List<String> keys = PlayerDataPlugin.getBackend().getKeys(getTypeKey());
-
+		List<String> keys = PlayerDataPlugin.getBackend().getKeys();
 		for (String key : keys)
 		{
 			if (! isFileLoaded(key))
@@ -136,8 +133,6 @@ public abstract class AbstractDataCache<T extends AbstractData>
 
 		return Collections.unmodifiableMap(data);
 	}
-
-	public abstract String getTypeKey();
 
 	// ---- Util
 

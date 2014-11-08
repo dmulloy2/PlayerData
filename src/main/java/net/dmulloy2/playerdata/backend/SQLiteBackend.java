@@ -20,7 +20,11 @@ public class SQLiteBackend extends SQLBackend
 	{
 		Class.forName("org.sqlite.JDBC");
 		connection = DriverManager.getConnection(DATABASE);
-		PlayerDataPlugin.log("Established connection to players.db");
+		if (connection == null)
+			throw new IllegalStateException("Failed to connect to database!");
+
+		createTable();
+		PlayerDataPlugin.log("Established database connection to players.db");
 	}
 
 	@Override
