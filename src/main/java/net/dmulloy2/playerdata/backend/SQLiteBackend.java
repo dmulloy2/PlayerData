@@ -5,7 +5,7 @@ package net.dmulloy2.playerdata.backend;
 
 import java.sql.DriverManager;
 
-import net.dmulloy2.playerdata.PlayerDataPlugin;
+import net.dmulloy2.playerdata.core.PlayerData;
 
 /**
  * @author dmulloy2
@@ -14,6 +14,11 @@ import net.dmulloy2.playerdata.PlayerDataPlugin;
 public class SQLiteBackend extends SQLBackend
 {
 	private static final String DATABASE = "jdbc:sqlite:players.db";
+
+	public SQLiteBackend(PlayerData main)
+	{
+		super(main);
+	}
 
 	@Override
 	public void initialize() throws Throwable
@@ -24,7 +29,7 @@ public class SQLiteBackend extends SQLBackend
 			throw new IllegalStateException("Failed to connect to database!");
 
 		createTable();
-		PlayerDataPlugin.log("Established database connection to players.db");
+		main.log("Established database connection to players.db");
 	}
 
 	@Override

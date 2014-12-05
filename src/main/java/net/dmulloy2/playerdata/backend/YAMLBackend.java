@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import net.dmulloy2.playerdata.PlayerDataPlugin;
+import net.dmulloy2.playerdata.core.PlayerData;
 import net.dmulloy2.playerdata.types.AbstractData;
 import net.dmulloy2.playerdata.util.Util;
 
@@ -29,10 +29,16 @@ public class YAMLBackend implements Backend
 	private static final String FILE_NAME = "players";
 	private File folder;
 
+	private final PlayerData main;
+	public YAMLBackend(PlayerData main)
+	{
+		this.main = main;
+	}
+
 	@Override
 	public void initialize() throws Throwable
 	{
-		this.folder = new File(PlayerDataPlugin.getInstance().getDataFolder(), FILE_NAME);
+		this.folder = new File(main.getDataFolder(), FILE_NAME);
 		if (! folder.exists())
 			folder.mkdirs();
 	}

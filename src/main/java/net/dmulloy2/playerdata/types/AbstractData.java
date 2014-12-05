@@ -11,7 +11,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
+import net.dmulloy2.playerdata.core.DebugLogger;
 import net.dmulloy2.playerdata.util.Util;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -41,16 +43,20 @@ public abstract class AbstractData implements ConfigurationSerializable
 						field.setAccessible(accessible);
 					}
 				}
-			} catch (IllegalAccessException ex) { }
+			}
+			catch (Throwable ex)
+			{
+				DebugLogger.debug(Level.WARNING, Util.getUsefulStack(ex, "applying field " + entry.getKey()));
+			}
 		}
 	}
 
 	public AbstractData(ResultSet resultSet, Plugin plugin) throws SQLException
 	{
-		try
+		String dataKey = Util.getDataKey(plugin) + ".";
+		for (Field field : getClass().getDeclaredFields())
 		{
-			String dataKey = Util.getDataKey(plugin) + ".";
-			for (Field field : getClass().getDeclaredFields())
+			try
 			{
 				Object value = resultSet.getObject(dataKey + field.getName());
 				if (value != null)
@@ -61,7 +67,11 @@ public abstract class AbstractData implements ConfigurationSerializable
 					field.setAccessible(accessible);
 				}
 			}
-		} catch (IllegalAccessException ex) { }
+			catch (Throwable ex)
+			{
+				DebugLogger.debug(Level.WARNING, Util.getUsefulStack(ex, "applying field " + field.getName()));
+			}
+		}
 	}
 
 	@Override
@@ -117,7 +127,11 @@ public abstract class AbstractData implements ConfigurationSerializable
 				}
 
 				field.setAccessible(accessible);
-			} catch (Throwable ex) { }
+			}
+			catch (Throwable ex)
+			{
+				DebugLogger.debug(Level.WARNING, Util.getUsefulStack(ex, "serializing field " + field.getName()));
+			}
 		}
 
 		return data;

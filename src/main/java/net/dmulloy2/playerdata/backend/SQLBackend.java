@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.dmulloy2.playerdata.PlayerDataPlugin;
+import net.dmulloy2.playerdata.core.PlayerData;
 import net.dmulloy2.playerdata.types.AbstractData;
 import net.dmulloy2.playerdata.util.Util;
 
@@ -29,7 +29,14 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public abstract class SQLBackend implements Backend
 {
 	private static final String TABLE = "players";
+
 	protected Connection connection;
+
+	protected final PlayerData main;
+	public SQLBackend(PlayerData main)
+	{
+		this.main = main;
+	}
 
 	@Override
 	public abstract void initialize() throws Throwable;
@@ -144,7 +151,7 @@ public abstract class SQLBackend implements Backend
 		}
 		catch (Throwable ex)
 		{
-			PlayerDataPlugin.getInstance().getLogger().log(Level.WARNING, "Failed to obtain keys:", ex);
+			main.getLogger().log(Level.WARNING, "Failed to obtain keys:", ex);
 			return null;
 		}
 	}

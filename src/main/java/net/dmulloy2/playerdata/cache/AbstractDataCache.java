@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
-import net.dmulloy2.playerdata.PlayerDataPlugin;
+import net.dmulloy2.playerdata.core.PlayerData;
 import net.dmulloy2.playerdata.types.AbstractData;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,9 +26,11 @@ public abstract class AbstractDataCache<T extends AbstractData>
 	protected final Class<T> type;
 	protected final ConcurrentMap<String, T> cache;
 
+	protected final PlayerData main;
 	protected final JavaPlugin plugin;
 	public AbstractDataCache(JavaPlugin plugin, Class<T> type)
 	{
+		this.main = PlayerData.getInstance();
 		this.cache = new ConcurrentHashMap<>(64, 0.75F, 64);
 		this.plugin = plugin;
 		this.type = type;
@@ -86,7 +88,7 @@ public abstract class AbstractDataCache<T extends AbstractData>
 	{
 		try
 		{
-			T data = PlayerDataPlugin.getBackend().load(key, plugin, type);
+			T data = main.getBackend().load(key, plugin, type);
 			return data;
 		}
 		catch (Throwable ex)
@@ -104,7 +106,7 @@ public abstract class AbstractDataCache<T extends AbstractData>
 
 		for (Entry<String, T> entry : getAllLoadedData().entrySet())
 		{
-			PlayerDataPlugin.getBackend().save(entry.getKey(), plugin, entry.getValue());
+			main.getBackend().save(entry.getKey(), plugin, entry.getValue());
 		}
 
 		plugin.getLogger().info("Players saved! Took " + (System.currentTimeMillis() - start) + " ms.");
@@ -124,7 +126,7 @@ public abstract class AbstractDataCache<T extends AbstractData>
 		Map<String, T> data = new HashMap<>();
 		data.putAll(cache);
 
-		List<String> keys = PlayerDataPlugin.getBackend().getKeys();
+		List<String> keys = main.getBackend().getKeys();
 		for (String key : keys)
 		{
 			if (! isFileLoaded(key))
