@@ -187,4 +187,9 @@ public abstract class SQLBackend implements Backend
 	@Override
 	public abstract String getName();
 
+	public final Connection getConnection()
+	{
+		return connection;
+	}
+
 }

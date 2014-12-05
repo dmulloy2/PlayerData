@@ -3,11 +3,13 @@
  */
 package net.dmulloy2.playerdata.core;
 
+import java.sql.Connection;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 
 import net.dmulloy2.playerdata.backend.Backend;
 import net.dmulloy2.playerdata.backend.MySQLBackend;
+import net.dmulloy2.playerdata.backend.SQLBackend;
 import net.dmulloy2.playerdata.backend.SQLiteBackend;
 import net.dmulloy2.playerdata.backend.YAMLBackend;
 
@@ -67,6 +69,27 @@ public class PlayerData extends JavaPlugin
 		}
 
 		getLogger().info("Using the " + backend.getName() + " backend!");
+	}
+
+	@Override
+	public void onDisable()
+	{
+		// Clear the debug logger
+		DebugLogger.clear();
+
+		// Attempt to close any SQL connections we might have
+		if (backend instanceof SQLBackend)
+		{
+			SQLBackend sql = (SQLBackend) backend;
+			Connection connection = sql.getConnection();
+			if (connection != null)
+			{
+				try
+				{
+					connection.close();
+				} catch (Throwable ex) { }
+			}
+		}
 	}
 
 	// ---- Getters
