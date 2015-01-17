@@ -6,7 +6,6 @@ package net.dmulloy2.playerdata.types;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,7 +50,7 @@ public abstract class AbstractData implements ConfigurationSerializable
 		}
 	}
 
-	public AbstractData(ResultSet resultSet, Plugin plugin) throws SQLException
+	public AbstractData(ResultSet resultSet, Plugin plugin)
 	{
 		String dataKey = Util.getDataKey(plugin) + ".";
 		for (Field field : getClass().getDeclaredFields())
